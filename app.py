@@ -33,6 +33,21 @@ if uploaded_file:
     # Missing Values
     st.subheader("⚠️ Missing Values")
     st.write(df.isnull().sum())
+    # 🧹 Handle Missing Values
+st.subheader("🧹 Data Cleaning")
+
+option = st.selectbox(
+    "Choose method to handle missing values",
+    ["None", "Drop Rows", "Fill with Mean"]
+)
+
+if option == "Drop Rows":
+    df = df.dropna()
+    st.success("Missing rows dropped!")
+
+elif option == "Fill with Mean":
+    df = df.fillna(df.mean(numeric_only=True))
+    st.success("Missing values filled with mean!")
 
     # Visualization
     st.subheader("📈 Visualization")
