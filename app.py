@@ -33,20 +33,8 @@ if uploaded_file:
     # Missing Values
     st.subheader("⚠️ Missing Values")
     st.write(df.isnull().sum())
-    if uploaded_file:
-    df = pd.read_csv(uploaded_file)
 
-    # Sidebar
-    st.sidebar.title("⚙️ Controls")
-    selected_columns = st.sidebar.multiselect(
-        "Select columns",
-        df.columns,
-        default=df.columns
-    )
-
-    df = df[selected_columns]
-
-    # 🧹 Data Cleaning (PLACE IT HERE)
+    # 🧹 Data Cleaning
     st.subheader("🧹 Data Cleaning")
 
     option = st.selectbox(
@@ -59,15 +47,17 @@ if uploaded_file:
         st.success("Missing rows dropped!")
 
     elif option == "Fill with Mean":
-        df = df.fillna(df.mean(numeric_only=True))
+        numeric_cols = df.select_dtypes(include=['number']).columns
+        df[numeric_cols] = df[numeric_cols].fillna(df[numeric_cols].mean())
         st.success("Missing values filled with mean!")
+
     # Visualization
     st.subheader("📈 Visualization")
     column = st.selectbox("Select column", df.columns)
 
     fig, ax = plt.subplots()
 
-    if df[column].dtype != 'object':
+    if pd.api.types.is_numeric_dtype(df[column]):
         ax.hist(df[column], bins=20)
         ax.set_title(f"Distribution of {column}")
     else:
@@ -76,7 +66,7 @@ if uploaded_file:
 
     st.pyplot(fig)
 
-    # 🔥 Correlation Heatmap
+    # Correlation Heatmap
     st.subheader("🔥 Correlation Heatmap")
 
     numeric_df = df.select_dtypes(include=['number'])
@@ -98,14 +88,14 @@ if uploaded_file:
     else:
         st.write("No numeric columns available for correlation.")
 
-    # 🧠 Insights
+    # Insights
     st.subheader("🧠 Insights")
 
     insights = generate_insights(df)
     for i in insights:
         st.write("- " + i)
 
-    # 📥 Download Report
+    # Download
     st.subheader("📥 Download Processed Data")
 
     csv = df.to_csv(index=False).encode('utf-8')
