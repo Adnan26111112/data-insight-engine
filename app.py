@@ -33,22 +33,34 @@ if uploaded_file:
     # Missing Values
     st.subheader("⚠️ Missing Values")
     st.write(df.isnull().sum())
-    # 🧹 Handle Missing Values
-st.subheader("🧹 Data Cleaning")
+    if uploaded_file:
+    df = pd.read_csv(uploaded_file)
 
-option = st.selectbox(
-    "Choose method to handle missing values",
-    ["None", "Drop Rows", "Fill with Mean"]
-)
+    # Sidebar
+    st.sidebar.title("⚙️ Controls")
+    selected_columns = st.sidebar.multiselect(
+        "Select columns",
+        df.columns,
+        default=df.columns
+    )
 
-if option == "Drop Rows":
-    df = df.dropna()
-    st.success("Missing rows dropped!")
+    df = df[selected_columns]
 
-elif option == "Fill with Mean":
-    df = df.fillna(df.mean(numeric_only=True))
-    st.success("Missing values filled with mean!")
+    # 🧹 Data Cleaning (PLACE IT HERE)
+    st.subheader("🧹 Data Cleaning")
 
+    option = st.selectbox(
+        "Choose method to handle missing values",
+        ["None", "Drop Rows", "Fill with Mean"]
+    )
+
+    if option == "Drop Rows":
+        df = df.dropna()
+        st.success("Missing rows dropped!")
+
+    elif option == "Fill with Mean":
+        df = df.fillna(df.mean(numeric_only=True))
+        st.success("Missing values filled with mean!")
     # Visualization
     st.subheader("📈 Visualization")
     column = st.selectbox("Select column", df.columns)
